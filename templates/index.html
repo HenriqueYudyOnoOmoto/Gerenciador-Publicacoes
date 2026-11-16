@@ -1,73 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Publicações</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Publicações</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="container">
-        <h1>Gerenciador de Publicações</h1>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="app-title">Gerenciador de <span class="texto-azul">Publicações</span></h1>
+    </header>
 
-        {# Mensagens de confirmação e erro #}
-        {% with mensagens = get_flashed_messages(with_categories=true) %}
-        {% if mensagens %}
-        <div class="mensagens">
-            {% for categoria, mensagem in mensagens %}
-            <p class="mensagem">{{ mensagem }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
-
-        <section>
-            <h2>Nova publicação</h2>
-            <form action="{{ url_for('criar') }}" method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-
-                <div class="form-grupo">
-                    <label for="titulo">Título:</label>
-                    <input type="text" id="titulo" name="titulo" maxlength="100" required>
-                </div>
-
-                <div class="form-grupo">
-                    <label for="conteudo">Conteúdo:</label>
-                    <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" required></textarea>
-                </div>
-
-                <div class="form-acoes">
-                    <button type="submit">Cadastrar</button>
-                </div>
-            </form>
-        </section>
-
-        <section>
-            <h2>Publicações</h2>
-            {% if publicacoes %}
-            <div class="lista-publicacoes">
-                {% for pub in publicacoes %}
-                <article class="publicacao-item">
-                    <h3>{{ pub.titulo }}</h3>
-                    <p>{{ pub.conteudo }}</p>
-                    <div class="publicacao-acoes">
-                        <a href="{{ url_for('editar', id=pub.id) }}">Editar</a>
-                        <form action="{{ url_for('excluir', id=pub.id) }}" method="POST"
-                            onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                            <button type="submit">Excluir</button>
-                        </form>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p>Nenhuma publicação cadastrada.</p>
-            {% endif %}
-        </section>
+    {# Mensagens de feedback (Callouts) #}
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+    <div class="mensagens">
+      {% for categoria, mensagem in mensagens %}
+      <div class="warning-callout callout-{{ 'verde' if categoria == 'sucesso' else 'vermelho' }}">
+        {{ mensagem }}
+      </div>
+      {% endfor %}
     </div>
-</body>
+    {% endif %}
+    {% endwith %}
 
+    {# Seção: Nova publicação #}
+    <section class="card borda-azul">
+      <div class="section-title-group">
+        <span class="concept-tag texto-azul">Novo Registro</span>
+        <h2 class="section-title">Nova publicação</h2>
+      </div>
+
+      <form action="{{ url_for('criar') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-grupo">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" maxlength="100" placeholder="Digite o título da publicação" required>
+        </div>
+
+        <div class="form-grupo">
+          <label for="conteudo">Conteúdo</label>
+          <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" placeholder="Digite o conteúdo da publicação" required></textarea>
+        </div>
+
+        <div class="form-acoes">
+          <button type="submit" class="btn btn-primary">Cadastrar</button>
+        </div>
+      </form>
+    </section>
+
+    {# Seção: Publicações #}
+    <section class="card borda-verde" style="margin-top: 1.5rem;">
+      <div class="section-title-group">
+        <span class="concept-tag texto-verde">Feed</span>
+        <h2 class="section-title">Publicações</h2>
+      </div>
+
+      {% if publicacoes %}
+      <div class="lista-publicacoes">
+        {% for pub in publicacoes %}
+        <article class="publicacao-item">
+          <h3 class="concept-title">{{ pub.titulo }}</h3>
+          <p class="concept-desc">{{ pub.conteudo }}</p>
+          <div class="publicacao-acoes">
+            <a href="{{ url_for('editar', id=pub.id) }}" class="btn btn-edit">Editar</a>
+            <form action="{{ url_for('excluir', id=pub.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="btn btn-delete">Excluir</button>
+            </form>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p class="concept-desc">Nenhuma publicação cadastrada.</p>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</body>
 </html>

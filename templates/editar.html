@@ -1,47 +1,59 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Publicação — Gerenciador de Publicações</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar Publicação — Gerenciador de Publicações</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Gerenciador de Publicações</h1>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="app-title">Gerenciador de <span class="texto-azul">Publicações</span></h1>
+    </header>
 
-        {# Mensagens de confirmação e erro #}
-        {% with mensagens = get_flashed_messages(with_categories=true) %}
-        {% if mensagens %}
-        <div class="mensagens">
-            {% for categoria, mensagem in mensagens %}
-            <p class="mensagem">{{ mensagem }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
-
-        <section>
-            <h2>Editar publicação</h2>
-            <form action="{{ url_for('editar_salvar', id=publicacao.id) }}" method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-
-                <div class="form-grupo">
-                    <label for="titulo">Título:</label>
-                    <input type="text" id="titulo" name="titulo" value="{{ publicacao.titulo }}" maxlength="100" required>
-                </div>
-
-                <div class="form-grupo">
-                    <label for="conteudo">Conteúdo:</label>
-                    <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" required>{{ publicacao.conteudo }}</textarea>
-                </div>
-
-                <div class="form-acoes">
-                    <button type="submit">Salvar</button>
-                    <a href="{{ url_for('index') }}">Cancelar</a>
-                </div>
-            </form>
-        </section>
+    {# Mensagens de feedback (Callouts) #}
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+    <div class="mensagens">
+      {% for categoria, mensagem in mensagens %}
+      <div class="warning-callout callout-{{ 'verde' if categoria == 'sucesso' else 'vermelho' }}">
+        {{ mensagem }}
+      </div>
+      {% endfor %}
     </div>
+    {% endif %}
+    {% endwith %}
+
+    {# Seção: Editar publicação #}
+    <section class="card borda-amarela">
+      <div class="section-title-group">
+        <span class="concept-tag texto-amarelo">Atualização</span>
+        <h2 class="section-title">Editar publicação</h2>
+      </div>
+
+      <form action="{{ url_for('editar_salvar', id=publicacao.id) }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-grupo">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" value="{{ publicacao.titulo }}" maxlength="100" required>
+        </div>
+
+        <div class="form-grupo">
+          <label for="conteudo">Conteúdo</label>
+          <textarea id="conteudo" name="conteudo" rows="5" maxlength="2000" required>{{ publicacao.conteudo }}</textarea>
+        </div>
+
+        <div class="form-acoes">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <a href="{{ url_for('index') }}" class="btn btn-cancel">Cancelar</a>
+        </div>
+      </form>
+    </section>
+  </div>
 </body>
 </html>
