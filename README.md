@@ -1,6 +1,6 @@
-# Gerenciador de Publicações
+# Gerenciador de Ideias para Publicações
 
-Projeto acadêmico de PIT II. O sistema permite cadastrar, listar, editar e excluir publicações de texto.
+Projeto acadêmico de PIT II. O sistema é um gerenciador de ideias para publicações futuras, permitindo que o usuário registre, visualize, edite e exclua ideias de conteúdos que pretende produzir ou publicar posteriormente.
 
 ## Tecnologias
 
@@ -29,13 +29,13 @@ Abra <http://127.0.0.1:5000/> no navegador. O banco `publicacoes.db` e a tabela 
 python -m unittest test_app.py -v
 ```
 
-Os testes usam um banco temporário. Eles verificam cadastro, validação de campos vazios, listagem, edição, exclusão e se os dados permanecem após inicializar a estrutura do banco novamente.
+Os testes usam um banco temporário. Eles verificam registro de ideias, validação de campos vazios, listagem de ideias registradas, edição, exclusão e persistência após reinicialização da estrutura do banco.
 
 ## Arquivos principais
 
 - `app.py`: rotas, validações e acesso ao SQLite.
-- `templates/index.html`: cadastro e listagem.
-- `templates/editar.html`: formulário de edição.
+- `templates/index.html`: registro e listagem de ideias.
+- `templates/editar.html`: formulário de edição de ideia.
 - `static/style.css`: estilos da página.
 - `test_app.py`: testes automatizados.
 
@@ -43,4 +43,4 @@ Os testes usam um banco temporário. Eles verificam cadastro, validação de cam
 
 As consultas utilizam parâmetros no SQLite para proteção contra injeção de SQL. Formulários que alteram dados utilizam token CSRF, e a exclusão só aceita requisições `POST`.
 
-O sistema guarda apenas texto e não tem pesquisa, paginação ou controle de usuários.
+O sistema guarda apenas texto e não possui agendamento, calendário, categorias, publicação automática ou integração com redes sociais.

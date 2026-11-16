@@ -5,8 +5,8 @@ import sqlite3
 from app import app, inicializar_banco, obter_conexao
 
 
-class TestGerenciadorPublicacoes(unittest.TestCase):
-    """Testes das operações principais do gerenciador."""
+class TestGerenciadorIdeiasPublicacoes(unittest.TestCase):
+    """Testes das operações principais do gerenciador de ideias para publicações."""
 
     def setUp(self):
         self.temp_db = tempfile.NamedTemporaryFile(suffix='.db', delete=False)
@@ -33,29 +33,29 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         with self.client.session_transaction() as sess:
             return sess.get('csrf_token')
 
-    # 1. Cadastro válido
-    def test_1_cadastro_valido(self):
+    # 1. Registro válido de ideia
+    def test_1_registro_valido(self):
         token = self._obter_token_csrf()
         dados = {
-            'titulo': 'Primeira Publicação',
-            'conteudo': 'Conteúdo de teste da primeira publicação.',
+            'titulo': 'Primeira Ideia',
+            'conteudo': 'Rascunho de conteúdo para um post futuro.',
             'csrf_token': token
         }
         resposta = self.client.post('/criar', data=dados, follow_redirects=True)
 
         self.assertEqual(resposta.status_code, 200)
-        self.assertIn('Publicação cadastrada com sucesso!', resposta.get_data(as_text=True))
+        self.assertIn('Ideia salva com sucesso!', resposta.get_data(as_text=True))
 
         # Confirma persistência direta no banco de dados SQLite
         conexao = obter_conexao()
-        linha = conexao.execute('SELECT * FROM publicacoes WHERE titulo = ?', ('Primeira Publicação',)).fetchone()
+        linha = conexao.execute('SELECT * FROM publicacoes WHERE titulo = ?', ('Primeira Ideia',)).fetchone()
         conexao.close()
 
         self.assertIsNotNone(linha)
-        self.assertEqual(linha['conteudo'], 'Conteúdo de teste da primeira publicação.')
+        self.assertEqual(linha['conteudo'], 'Rascunho de conteúdo para um post futuro.')
 
-    # 2. Cadastro com campos vazios
-    def test_2_cadastro_campos_vazios(self):
+    # 2. Registro com campos vazios
+    def test_2_registro_campos_vazios(self):
         token = self._obter_token_csrf()
 
         # Tentativa com campos totalmente em branco
@@ -66,7 +66,7 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         }
         resposta = self.client.post('/criar', data=dados_vazios, follow_redirects=True)
         self.assertEqual(resposta.status_code, 200)
-        self.assertIn('O título e o conteúdo são obrigatórios.', resposta.get_data(as_text=True))
+        self.assertIn('O título e a descrição são obrigatórios.', resposta.get_data(as_text=True))
 
         # Tentativa com apenas espaços em branco
         dados_espacos = {
@@ -76,7 +76,7 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         }
         resposta_espacos = self.client.post('/criar', data=dados_espacos, follow_redirects=True)
         self.assertEqual(resposta_espacos.status_code, 200)
-        self.assertIn('O título e o conteúdo são obrigatórios.', resposta_espacos.get_data(as_text=True))
+        self.assertIn('O título e a descrição são obrigatórios.', resposta_espacos.get_data(as_text=True))
 
         # Confirma que nada foi inserido no banco de dados
         conexao = obter_conexao()
@@ -84,22 +84,22 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         conexao.close()
         self.assertEqual(total, 0)
 
-    # 3. Listagem de publicações
-    def test_3_listagem_publicacoes(self):
+    # 3. Listagem de ideias registradas
+    def test_3_listagem_ideias(self):
         # Cenário 1: Banco vazio exibe mensagem informativa
         resposta_vazia = self.client.get('/')
         self.assertEqual(resposta_vazia.status_code, 200)
-        self.assertIn('Nenhuma publicação cadastrada.', resposta_vazia.get_data(as_text=True))
+        self.assertIn('Nenhuma ideia registrada.', resposta_vazia.get_data(as_text=True))
 
         # Cenário 2: Inserção de dados e listagem correta
         conexao = obter_conexao()
         conexao.execute(
             'INSERT INTO publicacoes (titulo, conteudo) VALUES (?, ?)',
-            ('Aviso de Reunião', 'A reunião do PIT ocorrerá na sexta-feira.')
+            ('Ideia de Post sobre Python', 'Apresentar 5 dicas de Python para iniciantes.')
         )
         conexao.execute(
             'INSERT INTO publicacoes (titulo, conteudo) VALUES (?, ?)',
-            ('Dica de Flask', 'Flask é um microframework simples e eficiente.')
+            ('Ideia de Vídeo sobre SQLite', 'Explicar vantagens do banco serverless.')
         )
         conexao.commit()
         conexao.close()
@@ -108,19 +108,19 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         self.assertEqual(resposta.status_code, 200)
         conteudo_html = resposta.get_data(as_text=True)
 
-        self.assertIn('Aviso de Reunião', conteudo_html)
-        self.assertIn('A reunião do PIT ocorrerá na sexta-feira.', conteudo_html)
-        self.assertIn('Dica de Flask', conteudo_html)
-        self.assertIn('Flask é um microframework simples e eficiente.', conteudo_html)
+        self.assertIn('Ideia de Post sobre Python', conteudo_html)
+        self.assertIn('Apresentar 5 dicas de Python para iniciantes.', conteudo_html)
+        self.assertIn('Ideia de Vídeo sobre SQLite', conteudo_html)
+        self.assertIn('Explicar vantagens do banco serverless.', conteudo_html)
 
-    # 4. Edição de publicação
-    def test_4_edicao_publicacao(self):
+    # 4. Edição de ideia
+    def test_4_edicao_ideia(self):
         # Insere registro inicial
         conexao = obter_conexao()
         cursor = conexao.cursor()
         cursor.execute(
             'INSERT INTO publicacoes (titulo, conteudo) VALUES (?, ?)',
-            ('Título Antigo', 'Conteúdo Antigo')
+            ('Ideia Inicial', 'Texto inicial da ideia')
         )
         pub_id = cursor.lastrowid
         conexao.commit()
@@ -129,38 +129,38 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         # Verifica exibição do formulário de edição (GET /editar/<id>)
         resposta_form = self.client.get(f'/editar/{pub_id}')
         self.assertEqual(resposta_form.status_code, 200)
-        self.assertIn('Título Antigo', resposta_form.get_data(as_text=True))
+        self.assertIn('Ideia Inicial', resposta_form.get_data(as_text=True))
 
         # Envia alterações válidas (POST /editar/<id>)
         token = self._obter_token_csrf()
         dados_atualizados = {
-            'titulo': 'Título Novo e Modificado',
-            'conteudo': 'Conteúdo totalmente atualizado.',
+            'titulo': 'Ideia Atualizada e Melhorada',
+            'conteudo': 'Texto detalhado da ideia após revisão.',
             'csrf_token': token
         }
         resposta_post = self.client.post(f'/editar/{pub_id}', data=dados_atualizados, follow_redirects=True)
         self.assertEqual(resposta_post.status_code, 200)
-        self.assertIn('Publicação atualizada com sucesso!', resposta_post.get_data(as_text=True))
+        self.assertIn('Ideia atualizada com sucesso!', resposta_post.get_data(as_text=True))
 
         # Confirma alteração no banco de dados
         conexao = obter_conexao()
         registro = conexao.execute('SELECT * FROM publicacoes WHERE id = ?', (pub_id,)).fetchone()
         conexao.close()
-        self.assertEqual(registro['titulo'], 'Título Novo e Modificado')
-        self.assertEqual(registro['conteudo'], 'Conteúdo totalmente atualizado.')
+        self.assertEqual(registro['titulo'], 'Ideia Atualizada e Melhorada')
+        self.assertEqual(registro['conteudo'], 'Texto detalhado da ideia após revisão.')
 
         # Verifica resposta 404 para ID inexistente
         resposta_inexistente = self.client.get('/editar/9999')
         self.assertEqual(resposta_inexistente.status_code, 404)
 
-    # 5. Exclusão de publicação
-    def test_5_exclusao_publicacao(self):
+    # 5. Exclusão de ideia
+    def test_5_exclusao_ideia(self):
         # Insere registro para ser excluído
         conexao = obter_conexao()
         cursor = conexao.cursor()
         cursor.execute(
             'INSERT INTO publicacoes (titulo, conteudo) VALUES (?, ?)',
-            ('Publicação Temporária', 'Será excluída em seguida.')
+            ('Ideia Temporária', 'Será excluída em seguida.')
         )
         pub_id = cursor.lastrowid
         conexao.commit()
@@ -169,7 +169,7 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         token = self._obter_token_csrf()
         resposta = self.client.post(f'/excluir/{pub_id}', data={'csrf_token': token}, follow_redirects=True)
         self.assertEqual(resposta.status_code, 200)
-        self.assertIn('Publicação excluída', resposta.get_data(as_text=True))
+        self.assertIn('Ideia excluída', resposta.get_data(as_text=True))
 
         # Confirma que não existe mais no banco de dados
         conexao = obter_conexao()
@@ -183,11 +183,11 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
 
     # 6. Os dados continuam disponíveis após inicializar o banco novamente
     def test_6_persistencia_apos_nova_inicializacao_do_banco(self):
-        # Cadastra uma publicação
+        # Cadastra uma ideia
         token = self._obter_token_csrf()
         dados = {
-            'titulo': 'Publicação Persistente',
-            'conteudo': 'Estes dados devem continuar no banco.',
+            'titulo': 'Ideia Persistente',
+            'conteudo': 'Esta ideia deve continuar no banco de dados.',
             'csrf_token': token
         }
         self.client.post('/criar', data=dados)
@@ -199,16 +199,16 @@ class TestGerenciadorPublicacoes(unittest.TestCase):
         conexao = obter_conexao()
         registro = conexao.execute(
             'SELECT * FROM publicacoes WHERE titulo = ?',
-            ('Publicação Persistente',)
+            ('Ideia Persistente',)
         ).fetchone()
         conexao.close()
 
         self.assertIsNotNone(registro)
-        self.assertEqual(registro['conteudo'], 'Estes dados devem continuar no banco.')
+        self.assertEqual(registro['conteudo'], 'Esta ideia deve continuar no banco de dados.')
 
         resposta = novo_cliente.get('/')
         self.assertEqual(resposta.status_code, 200)
-        self.assertIn('Publicação Persistente', resposta.get_data(as_text=True))
+        self.assertIn('Ideia Persistente', resposta.get_data(as_text=True))
 
 
 if __name__ == '__main__':

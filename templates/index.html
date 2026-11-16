@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerenciador de Publicações</title>
+  <title>Gerenciador de Ideias para Publicações</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +12,7 @@
 <body>
   <div class="app-container">
     <header class="app-header">
-      <h1 class="app-title">Gerenciador de <span class="texto-azul">Publicações</span></h1>
+      <h1 class="app-title">Gerenciador de Ideias para <span class="texto-azul">Publicações</span></h1>
     </header>
 
     {# Mensagens de feedback (Callouts) #}
@@ -28,37 +28,37 @@
     {% endif %}
     {% endwith %}
 
-    {# Seção: Nova publicação #}
+    {# Seção: Nova ideia #}
     <section class="card borda-azul">
       <div class="section-title-group">
         <span class="concept-tag texto-azul">Novo Registro</span>
-        <h2 class="section-title">Nova publicação</h2>
+        <h2 class="section-title">Nova ideia</h2>
       </div>
 
       <form action="{{ url_for('criar') }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
         <div class="form-grupo">
-          <label for="titulo">Título</label>
-          <input type="text" id="titulo" name="titulo" maxlength="100" placeholder="Digite o título da publicação" required>
+          <label for="titulo">Título:</label>
+          <input type="text" id="titulo" name="titulo" maxlength="100" placeholder="Digite o título da ideia" required>
         </div>
 
         <div class="form-grupo">
-          <label for="conteudo">Conteúdo</label>
-          <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" placeholder="Digite o conteúdo da publicação" required></textarea>
+          <label for="conteudo">Descrição:</label>
+          <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" placeholder="Digite a descrição da ideia" required></textarea>
         </div>
 
         <div class="form-acoes">
-          <button type="submit" class="btn btn-primary">Cadastrar</button>
+          <button type="submit" class="btn btn-primary">Salvar ideia</button>
         </div>
       </form>
     </section>
 
-    {# Seção: Publicações #}
+    {# Seção: Ideias registradas #}
     <section class="card borda-verde" style="margin-top: 1.5rem;">
       <div class="section-title-group">
         <span class="concept-tag texto-verde">Feed</span>
-        <h2 class="section-title">Publicações</h2>
+        <h2 class="section-title">Ideias registradas</h2>
       </div>
 
       {% if publicacoes %}
@@ -69,7 +69,7 @@
           <p class="concept-desc">{{ pub.conteudo }}</p>
           <div class="publicacao-acoes">
             <a href="{{ url_for('editar', id=pub.id) }}" class="btn btn-edit">Editar</a>
-            <form action="{{ url_for('excluir', id=pub.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
+            <form action="{{ url_for('excluir', id=pub.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta ideia?');">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <button type="submit" class="btn btn-delete">Excluir</button>
             </form>
@@ -79,7 +79,7 @@
       </div>
       {% else %}
       <div class="empty-state">
-        <p class="concept-desc">Nenhuma publicação cadastrada.</p>
+        <p class="concept-desc">Nenhuma ideia registrada.</p>
       </div>
       {% endif %}
     </section>
