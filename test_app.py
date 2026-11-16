@@ -66,7 +66,7 @@ class TestGerenciadorIdeiasPublicacoes(unittest.TestCase):
         }
         resposta = self.client.post('/criar', data=dados_vazios, follow_redirects=True)
         self.assertEqual(resposta.status_code, 200)
-        self.assertIn('O título e a ideia são obrigatórios.', resposta.get_data(as_text=True))
+        self.assertIn('O título e a descrição são obrigatórios.', resposta.get_data(as_text=True))
 
         # Tentativa com apenas espaços em branco
         dados_espacos = {
@@ -76,7 +76,7 @@ class TestGerenciadorIdeiasPublicacoes(unittest.TestCase):
         }
         resposta_espacos = self.client.post('/criar', data=dados_espacos, follow_redirects=True)
         self.assertEqual(resposta_espacos.status_code, 200)
-        self.assertIn('O título e a ideia são obrigatórios.', resposta_espacos.get_data(as_text=True))
+        self.assertIn('O título e a descrição são obrigatórios.', resposta_espacos.get_data(as_text=True))
 
         # Confirma que nada foi inserido no banco de dados
         conexao = obter_conexao()
