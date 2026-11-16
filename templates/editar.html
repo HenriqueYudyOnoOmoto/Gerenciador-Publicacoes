@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Publicação — Gerenciador de Publicações</title>
+    <title>Editar Ideia — Gerenciador de Ideias de Publicações</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Gerenciador de Publicações</h1>
+        <h1>Gerenciador de Ideias de Publicações</h1>
 
         {# Mensagens de confirmação e erro #}
         {% with mensagens = get_flashed_messages(with_categories=true) %}
@@ -22,7 +22,7 @@
         {% endwith %}
 
         <section>
-            <h2>Editar publicação</h2>
+            <h2>Editar ideia</h2>
             <form action="{{ url_for('editar_salvar', id=publicacao.id) }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
@@ -32,12 +32,12 @@
                 </div>
 
                 <div class="form-grupo">
-                    <label for="conteudo">Conteúdo:</label>
+                    <label for="conteudo">Ideia:</label>
                     <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" required>{{ publicacao.conteudo }}</textarea>
                 </div>
 
                 <div class="form-acoes">
-                    <button type="submit">Salvar</button>
+                    <button type="submit">Salvar ideia</button>
                     <a href="{{ url_for('index') }}">Cancelar</a>
                 </div>
             </form>

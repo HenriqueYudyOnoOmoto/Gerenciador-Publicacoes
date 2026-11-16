@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Publicações</title>
+    <title>Gerenciador de Ideias de Publicações</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-
 <body>
     <div class="container">
-        <h1>Gerenciador de Publicações</h1>
+        <h1>Gerenciador de Ideias de Publicações</h1>
 
         {# Mensagens de confirmação e erro #}
         {% with mensagens = get_flashed_messages(with_categories=true) %}
@@ -24,7 +22,7 @@
         {% endwith %}
 
         <section>
-            <h2>Nova publicação</h2>
+            <h2>Nova ideia</h2>
             <form action="{{ url_for('criar') }}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
@@ -34,18 +32,18 @@
                 </div>
 
                 <div class="form-grupo">
-                    <label for="conteudo">Conteúdo:</label>
+                    <label for="conteudo">Ideia:</label>
                     <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" required></textarea>
                 </div>
 
                 <div class="form-acoes">
-                    <button type="submit">Cadastrar</button>
+                    <button type="submit">Salvar ideia</button>
                 </div>
             </form>
         </section>
 
         <section>
-            <h2>Publicações</h2>
+            <h2>Ideias registradas</h2>
             {% if publicacoes %}
             <div class="lista-publicacoes">
                 {% for pub in publicacoes %}
@@ -54,8 +52,7 @@
                     <p>{{ pub.conteudo }}</p>
                     <div class="publicacao-acoes">
                         <a href="{{ url_for('editar', id=pub.id) }}">Editar</a>
-                        <form action="{{ url_for('excluir', id=pub.id) }}" method="POST"
-                            onsubmit="return confirm('Tem certeza que deseja excluir esta publicação?');">
+                        <form action="{{ url_for('excluir', id=pub.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta ideia?');">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                             <button type="submit">Excluir</button>
                         </form>
@@ -64,10 +61,9 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p>Nenhuma publicação cadastrada.</p>
+            <p>Nenhuma ideia registrada.</p>
             {% endif %}
         </section>
     </div>
 </body>
-
 </html>

@@ -67,13 +67,13 @@ def criar():
     conteudo = request.form.get("conteudo", "").strip()
 
     if not titulo or not conteudo:
-        flash("O título e o conteúdo são obrigatórios.", "erro")
+        flash("O título e a ideia são obrigatórios.", "erro")
         return redirect(url_for("index"))
     if len(titulo) > 100:
         flash("O título não pode exceder 100 caracteres.", "erro")
         return redirect(url_for("index"))
     if len(conteudo) > 2000:
-        flash("O conteúdo não pode exceder 2000 caracteres.", "erro")
+        flash("A ideia não pode exceder 2000 caracteres.", "erro")
         return redirect(url_for("index"))
 
     conexao = obter_conexao()
@@ -83,7 +83,7 @@ def criar():
     )
     conexao.commit()
     conexao.close()
-    flash("Publicação cadastrada com sucesso!", "sucesso")
+    flash("Ideia salva com sucesso!", "sucesso")
     return redirect(url_for("index"))
 
 
@@ -96,7 +96,7 @@ def editar(id):
     conexao.close()
 
     if publicacao is None:
-        abort(404, description="Publicação não encontrada.")
+        abort(404, description="Ideia não encontrada.")
     return render_template("editar.html", publicacao=publicacao)
 
 
@@ -108,13 +108,13 @@ def editar_salvar(id):
     ).fetchone()
     if publicacao is None:
         conexao.close()
-        abort(404, description="Publicação não encontrada.")
+        abort(404, description="Ideia não encontrada.")
 
     titulo = request.form.get("titulo", "").strip()
     conteudo = request.form.get("conteudo", "").strip()
     if not titulo or not conteudo:
         conexao.close()
-        flash("O título e o conteúdo são obrigatórios.", "erro")
+        flash("O título e a ideia são obrigatórios.", "erro")
         return redirect(url_for("editar", id=id))
     if len(titulo) > 100:
         conexao.close()
@@ -122,7 +122,7 @@ def editar_salvar(id):
         return redirect(url_for("editar", id=id))
     if len(conteudo) > 2000:
         conexao.close()
-        flash("O conteúdo não pode exceder 2000 caracteres.", "erro")
+        flash("A ideia não pode exceder 2000 caracteres.", "erro")
         return redirect(url_for("editar", id=id))
 
     conexao.execute(
@@ -131,7 +131,7 @@ def editar_salvar(id):
     )
     conexao.commit()
     conexao.close()
-    flash("Publicação atualizada com sucesso!", "sucesso")
+    flash("Ideia atualizada com sucesso!", "sucesso")
     return redirect(url_for("index"))
 
 
@@ -143,12 +143,12 @@ def excluir(id):
     ).fetchone()
     if publicacao is None:
         conexao.close()
-        abort(404, description="Publicação não encontrada.")
+        abort(404, description="Ideia não encontrada.")
 
     conexao.execute("DELETE FROM publicacoes WHERE id = ?", (id,))
     conexao.commit()
     conexao.close()
-    flash("Publicação excluída", "sucesso")
+    flash("Ideia excluída", "sucesso")
     return redirect(url_for("index"))
 
 
