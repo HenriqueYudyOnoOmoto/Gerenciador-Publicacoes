@@ -1,4 +1,4 @@
-# Gerenciador de Ideias de Publicações
+# Gerenciador de Ideias para Publicações
 
 Projeto acadêmico de PIT II. O sistema é um gerenciador de ideias para publicações futuras, permitindo que o usuário registre, visualize, edite e exclua ideias de conteúdos que pretende produzir ou publicar posteriormente.
 

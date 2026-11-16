@@ -6,7 +6,7 @@ from app import app, inicializar_banco, obter_conexao
 
 
 class TestGerenciadorIdeiasPublicacoes(unittest.TestCase):
-    """Testes das operações principais do gerenciador de ideias de publicações."""
+    """Testes das operações principais do gerenciador de ideias para publicações."""
 
     def setUp(self):
         self.temp_db = tempfile.NamedTemporaryFile(suffix='.db', delete=False)
