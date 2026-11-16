@@ -41,6 +41,6 @@ Os testes usam um banco temporário. Eles verificam cadastro, validação de cam
 
 ## Segurança e limites
 
-As consultas usam parâmetros do SQLite. Formulários que alteram dados usam token CSRF, e a exclusão só aceita `POST`. A aplicação não tem login e foi preparada para uso local. Antes de publicá-la na internet, configure uma `SECRET_KEY` estável e use um servidor de produção; não use o servidor de desenvolvimento do Flask como hospedagem.
+As consultas utilizam parâmetros no SQLite para proteção contra injeção de SQL. Formulários que alteram dados utilizam token CSRF, e a exclusão só aceita requisições `POST`.
 
 O sistema guarda apenas texto e não tem pesquisa, paginação ou controle de usuários.
