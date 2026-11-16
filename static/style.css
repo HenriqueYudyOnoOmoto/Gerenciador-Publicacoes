@@ -1,0 +1,90 @@
+/* CSS mínimo para posicionamento e organização dos elementos */
+
+body {
+    background-color: #ffffff;
+    color: #000000;
+    margin: 20px;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+}
+
+h1 {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+}
+
+h2 {
+    font-size: 1.15rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+h3 {
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+/* Espaçamento de formulários */
+.form-grupo {
+    margin-bottom: 10px;
+}
+
+.form-grupo label {
+    display: block;
+    margin-bottom: 3px;
+}
+
+.form-grupo input[type="text"],
+.form-grupo textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-acoes {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Lista e itens de publicações */
+.lista-publicacoes {
+    margin-top: 10px;
+}
+
+.publicacao-item {
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #cccccc;
+}
+
+.publicacao-item p {
+    margin-bottom: 8px;
+    white-space: pre-line;
+    word-break: break-word;
+}
+
+.publicacao-acoes {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.publicacao-acoes form {
+    display: inline;
+    margin: 0;
+}
+
+/* Mensagens de feedback */
+.mensagens {
+    margin-bottom: 15px;
+}
+
+.mensagem {
+    margin-bottom: 5px;
+}
