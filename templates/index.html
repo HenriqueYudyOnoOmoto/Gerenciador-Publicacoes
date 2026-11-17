@@ -1,69 +1,147 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Ideias para Publicações</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerenciador de Ideias para Publicações</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Gerenciador de Ideias para Publicações</h1>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="app-title">Gerenciador de Ideias para <span class="texto-azul">Publicações</span></h1>
+    </header>
 
-        {# Mensagens de confirmação e erro #}
-        {% with mensagens = get_flashed_messages(with_categories=true) %}
-        {% if mensagens %}
-        <div class="mensagens">
-            {% for categoria, mensagem in mensagens %}
-            <p class="mensagem">{{ mensagem }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
-
-        <section>
-            <h2>Nova ideia</h2>
-            <form action="{{ url_for('criar') }}" method="POST">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-
-                <div class="form-grupo">
-                    <label for="titulo">Título:</label>
-                    <input type="text" id="titulo" name="titulo" maxlength="100" required>
-                </div>
-
-                <div class="form-grupo">
-                    <label for="conteudo">Descrição:</label>
-                    <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" required></textarea>
-                </div>
-
-                <div class="form-acoes">
-                    <button type="submit">Salvar ideia</button>
-                </div>
-            </form>
-        </section>
-
-        <section>
-            <h2>Ideias registradas</h2>
-            {% if publicacoes %}
-            <div class="lista-publicacoes">
-                {% for pub in publicacoes %}
-                <article class="publicacao-item">
-                    <h3>{{ pub.titulo }}</h3>
-                    <p>{{ pub.conteudo }}</p>
-                    <div class="publicacao-acoes">
-                        <a href="{{ url_for('editar', id=pub.id) }}">Editar</a>
-                        <form action="{{ url_for('excluir', id=pub.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta ideia?');">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                            <button type="submit">Excluir</button>
-                        </form>
-                    </div>
-                </article>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p>Nenhuma ideia registrada.</p>
-            {% endif %}
-        </section>
+    {# Mensagens de feedback (Callouts) #}
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+    {% if mensagens %}
+    <div class="mensagens">
+      {% for categoria, mensagem in mensagens %}
+      <div class="warning-callout callout-{{ 'verde' if categoria == 'sucesso' else 'vermelho' }}">
+        {{ mensagem }}
+      </div>
+      {% endfor %}
     </div>
+    {% endif %}
+    {% endwith %}
+
+    {# Seção: Nova ideia #}
+    <section class="card">
+      <div class="section-title-group">
+        <span class="concept-tag">Novo Registro</span>
+        <h2 class="section-title">Nova ideia</h2>
+      </div>
+
+      <form id="form-nova-ideia" action="{{ url_for('criar') }}" method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+        <div class="form-grupo">
+          <label for="titulo">Título:</label>
+          <input type="text" id="titulo" name="titulo" maxlength="100" placeholder="Digite o título da ideia" required>
+          <small class="contador-caracteres" id="contador-titulo">0/100</small>
+        </div>
+
+        <div class="form-grupo">
+          <label for="conteudo">Descrição:</label>
+          <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" placeholder="Digite a descrição da ideia" required></textarea>
+          <small class="contador-caracteres" id="contador-conteudo">0/2000</small>
+        </div>
+
+        <div class="form-acoes">
+          <button type="submit" class="btn btn-primary">Salvar ideia</button>
+        </div>
+      </form>
+    </section>
+
+    {# Seção: Ideias registradas #}
+    <section class="card" style="margin-top: 1.5rem;">
+      <div class="section-title-group">
+        <span class="concept-tag">Feed</span>
+        <h2 class="section-title">Ideias registradas</h2>
+      </div>
+
+      {% if publicacoes %}
+      <div class="lista-publicacoes">
+        {% for pub in publicacoes %}
+        <article class="publicacao-item {{ 'item-postado' if pub.postada == 1 else '' }}">
+          <h3 class="concept-title {{ 'ideia-postada' if pub.postada == 1 else '' }}">{{ pub.titulo }}</h3>
+          <p class="concept-desc">{{ pub.conteudo }}</p>
+          <div class="publicacao-acoes">
+            <form action="{{ url_for('alternar_postada', id=pub.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="btn {{ 'btn-desmarcar' if pub.postada == 1 else 'btn-marcar' }}">
+                {{ 'Desmarcar' if pub.postada == 1 else 'Marcar como postada' }}
+              </button>
+            </form>
+            <a href="{{ url_for('editar', id=pub.id) }}" class="btn btn-edit">Editar</a>
+            <form action="{{ url_for('excluir', id=pub.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta ideia?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="btn btn-delete">Excluir</button>
+            </form>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <p class="concept-desc">Nenhuma ideia registrada.</p>
+      </div>
+      {% endif %}
+    </section>
+  </div>
+
+  <script>
+    const tituloInput = document.getElementById('titulo');
+    const conteudoInput = document.getElementById('conteudo');
+    const contadorTitulo = document.getElementById('contador-titulo');
+    const contadorConteudo = document.getElementById('contador-conteudo');
+    const formNovaIdeia = document.getElementById('form-nova-ideia');
+
+    // Atualiza a contagem de caracteres dos campos
+    function atualizarContadores() {
+      if (tituloInput && contadorTitulo) {
+        contadorTitulo.textContent = `${tituloInput.value.length}/100`;
+      }
+      if (conteudoInput && contadorConteudo) {
+        contadorConteudo.textContent = `${conteudoInput.value.length}/2000`;
+      }
+    }
+
+    if (tituloInput && conteudoInput) {
+      // Se acabou de salvar uma ideia com sucesso, limpa o rascunho anterior
+      const mensagemSucesso = document.querySelector('.callout-verde');
+      if (mensagemSucesso && mensagemSucesso.textContent.includes('salva com sucesso')) {
+        sessionStorage.removeItem('rascunho_titulo');
+        sessionStorage.removeItem('rascunho_conteudo');
+      } else {
+        // Restaura o texto preservado no sessionStorage (ex: após excluir outra ideia)
+        const tituloSalvo = sessionStorage.getItem('rascunho_titulo');
+        const conteudoSalvo = sessionStorage.getItem('rascunho_conteudo');
+        if (tituloSalvo !== null) {
+          tituloInput.value = tituloSalvo;
+        }
+        if (conteudoSalvo !== null) {
+          conteudoInput.value = conteudoSalvo;
+        }
+      }
+
+      // Exibe a contagem correta ao carregar a página
+      atualizarContadores();
+
+      // Salva o texto no sessionStorage e atualiza contador enquanto digita
+      tituloInput.addEventListener('input', () => {
+        sessionStorage.setItem('rascunho_titulo', tituloInput.value);
+        atualizarContadores();
+      });
+
+      conteudoInput.addEventListener('input', () => {
+        sessionStorage.setItem('rascunho_conteudo', conteudoInput.value);
+        atualizarContadores();
+      });
+    }
+  </script>
 </body>
 </html>

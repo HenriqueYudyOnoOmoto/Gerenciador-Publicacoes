@@ -210,6 +210,81 @@ class TestGerenciadorIdeiasPublicacoes(unittest.TestCase):
         self.assertEqual(resposta.status_code, 200)
         self.assertIn('Ideia Persistente', resposta.get_data(as_text=True))
 
+    # 7. Marcar e desmarcar ideia como postada
+    def test_7_marcar_e_desmarcar_postada(self):
+        token = self._obter_token_csrf()
+        dados = {
+            'titulo': 'Ideia para Instagram',
+            'conteudo': 'Roteiro pronto para publicação.',
+            'csrf_token': token
+        }
+        self.client.post('/criar', data=dados)
+
+        conexao = obter_conexao()
+        pub_id = conexao.execute('SELECT id FROM publicacoes WHERE titulo = ?', ('Ideia para Instagram',)).fetchone()['id']
+        conexao.close()
+
+        # 1. Marcar como postada
+        res_marcar = self.client.post(f'/alternar-postada/{pub_id}', data={'csrf_token': token}, follow_redirects=True)
+        self.assertEqual(res_marcar.status_code, 200)
+        html_marcada = res_marcar.get_data(as_text=True)
+        self.assertIn('Ideia marcada como postada!', html_marcada)
+        self.assertIn('ideia-postada', html_marcada)
+        self.assertIn('Desmarcar', html_marcada)
+
+        # Confirma estado 1 no banco SQLite
+        conexao = obter_conexao()
+        status = conexao.execute('SELECT postada FROM publicacoes WHERE id = ?', (pub_id,)).fetchone()['postada']
+        conexao.close()
+        self.assertEqual(status, 1)
+
+        # 2. Desmarcar
+        res_desmarcar = self.client.post(f'/alternar-postada/{pub_id}', data={'csrf_token': token}, follow_redirects=True)
+        self.assertEqual(res_desmarcar.status_code, 200)
+        html_desmarcada = res_desmarcar.get_data(as_text=True)
+        self.assertIn('Ideia desmarcada!', html_desmarcada)
+        self.assertIn('Marcar como postada', html_desmarcada)
+
+        # Confirma estado 0 no banco SQLite
+        conexao = obter_conexao()
+        status_novo = conexao.execute('SELECT postada FROM publicacoes WHERE id = ?', (pub_id,)).fetchone()['postada']
+        conexao.close()
+        self.assertEqual(status_novo, 0)
+
+    # 8. Ordenação: ideias pendentes primeiro e postadas ao final
+    def test_8_ordenacao_pendentes_primeiro_e_postadas_ao_final(self):
+        token = self._obter_token_csrf()
+        # Cadastra Ideia A e Ideia B
+        self.client.post('/criar', data={'titulo': 'Ideia A', 'conteudo': 'Conteudo A', 'csrf_token': token})
+        self.client.post('/criar', data={'titulo': 'Ideia B', 'conteudo': 'Conteudo B', 'csrf_token': token})
+
+        conexao = obter_conexao()
+        id_b = conexao.execute('SELECT id FROM publicacoes WHERE titulo = ?', ('Ideia B',)).fetchone()['id']
+        conexao.close()
+
+        # Marca Ideia B como postada
+        self.client.post(f'/alternar-postada/{id_b}', data={'csrf_token': token})
+
+        # Cadastra Ideia C (pendente)
+        self.client.post('/criar', data={'titulo': 'Ideia C', 'conteudo': 'Conteudo C', 'csrf_token': token})
+
+        # Na listagem, Ideia C e Ideia A (pendentes) devem vir antes de Ideia B (postada)
+        resposta = self.client.get('/')
+        html = resposta.get_data(as_text=True)
+
+        pos_c = html.find('Ideia C')
+        pos_a = html.find('Ideia A')
+        pos_b = html.find('Ideia B')
+
+        self.assertTrue(pos_c < pos_b, 'Ideia pendente C deve vir antes da postada B')
+        self.assertTrue(pos_a < pos_b, 'Ideia pendente A deve vir antes da postada B')
+
+    # 9. Alternar postada com ID inexistente retorna 404
+    def test_9_alternar_postada_inexistente_404(self):
+        token = self._obter_token_csrf()
+        resposta = self.client.post('/alternar-postada/9999', data={'csrf_token': token})
+        self.assertEqual(resposta.status_code, 404)
+
 
 if __name__ == '__main__':
     unittest.main()
