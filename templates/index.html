@@ -141,14 +141,6 @@
         sessionStorage.setItem('rascunho_conteudo', conteudoInput.value);
         atualizarContadores();
       });
-
-      // Limpa o rascunho ao enviar o formulário de cadastro
-      if (formNovaIdeia) {
-        formNovaIdeia.addEventListener('submit', () => {
-          sessionStorage.removeItem('rascunho_titulo');
-          sessionStorage.removeItem('rascunho_conteudo');
-        });
-      }
     }
   </script>
 </body>
