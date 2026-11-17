@@ -24,9 +24,16 @@ def inicializar_banco():
         """CREATE TABLE IF NOT EXISTS publicacoes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo TEXT NOT NULL,
-            conteudo TEXT NOT NULL
+            conteudo TEXT NOT NULL,
+            postada INTEGER NOT NULL DEFAULT 0
         )"""
     )
+    # Garante que a coluna 'postada' exista em bancos de dados já existentes
+    cursor = conexao.cursor()
+    cursor.execute("PRAGMA table_info(publicacoes)")
+    colunas = [coluna[1] for coluna in cursor.fetchall()]
+    if "postada" not in colunas:
+        conexao.execute("ALTER TABLE publicacoes ADD COLUMN postada INTEGER NOT NULL DEFAULT 0")
     conexao.commit()
     conexao.close()
 
@@ -55,7 +62,7 @@ def verificar_csrf():
 def index():
     conexao = obter_conexao()
     publicacoes = conexao.execute(
-        "SELECT id, titulo, conteudo FROM publicacoes ORDER BY id DESC"
+        "SELECT id, titulo, conteudo, postada FROM publicacoes ORDER BY postada ASC, id DESC"
     ).fetchall()
     conexao.close()
     return render_template("index.html", publicacoes=publicacoes)
@@ -149,6 +156,30 @@ def excluir(id):
     conexao.commit()
     conexao.close()
     flash("Ideia excluída", "sucesso")
+    return redirect(url_for("index"))
+
+
+@app.route("/alternar-postada/<int:id>", methods=["POST"])
+def alternar_postada(id):
+    conexao = obter_conexao()
+    publicacao = conexao.execute(
+        "SELECT id, postada FROM publicacoes WHERE id = ?", (id,)
+    ).fetchone()
+    if publicacao is None:
+        conexao.close()
+        abort(404, description="Ideia não encontrada.")
+
+    novo_estado = 0 if publicacao["postada"] == 1 else 1
+    conexao.execute(
+        "UPDATE publicacoes SET postada = ? WHERE id = ?", (novo_estado, id)
+    )
+    conexao.commit()
+    conexao.close()
+
+    if novo_estado == 1:
+        flash("Ideia marcada como postada!", "sucesso")
+    else:
+        flash("Ideia desmarcada!", "sucesso")
     return redirect(url_for("index"))
 
 

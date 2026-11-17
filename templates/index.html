@@ -29,23 +29,25 @@
     {% endwith %}
 
     {# Seção: Nova ideia #}
-    <section class="card borda-azul">
+    <section class="card">
       <div class="section-title-group">
-        <span class="concept-tag texto-azul">Novo Registro</span>
+        <span class="concept-tag">Novo Registro</span>
         <h2 class="section-title">Nova ideia</h2>
       </div>
 
-      <form action="{{ url_for('criar') }}" method="POST">
+      <form id="form-nova-ideia" action="{{ url_for('criar') }}" method="POST">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
 
         <div class="form-grupo">
           <label for="titulo">Título:</label>
           <input type="text" id="titulo" name="titulo" maxlength="100" placeholder="Digite o título da ideia" required>
+          <small class="contador-caracteres" id="contador-titulo">0/100</small>
         </div>
 
         <div class="form-grupo">
           <label for="conteudo">Descrição:</label>
           <textarea id="conteudo" name="conteudo" rows="4" maxlength="2000" placeholder="Digite a descrição da ideia" required></textarea>
+          <small class="contador-caracteres" id="contador-conteudo">0/2000</small>
         </div>
 
         <div class="form-acoes">
@@ -55,19 +57,25 @@
     </section>
 
     {# Seção: Ideias registradas #}
-    <section class="card borda-verde" style="margin-top: 1.5rem;">
+    <section class="card" style="margin-top: 1.5rem;">
       <div class="section-title-group">
-        <span class="concept-tag texto-verde">Feed</span>
+        <span class="concept-tag">Feed</span>
         <h2 class="section-title">Ideias registradas</h2>
       </div>
 
       {% if publicacoes %}
       <div class="lista-publicacoes">
         {% for pub in publicacoes %}
-        <article class="publicacao-item">
-          <h3 class="concept-title">{{ pub.titulo }}</h3>
+        <article class="publicacao-item {{ 'item-postado' if pub.postada == 1 else '' }}">
+          <h3 class="concept-title {{ 'ideia-postada' if pub.postada == 1 else '' }}">{{ pub.titulo }}</h3>
           <p class="concept-desc">{{ pub.conteudo }}</p>
           <div class="publicacao-acoes">
+            <form action="{{ url_for('alternar_postada', id=pub.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="btn {{ 'btn-desmarcar' if pub.postada == 1 else 'btn-marcar' }}">
+                {{ 'Desmarcar' if pub.postada == 1 else 'Marcar como postada' }}
+              </button>
+            </form>
             <a href="{{ url_for('editar', id=pub.id) }}" class="btn btn-edit">Editar</a>
             <form action="{{ url_for('excluir', id=pub.id) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja excluir esta ideia?');">
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -84,5 +92,64 @@
       {% endif %}
     </section>
   </div>
+
+  <script>
+    const tituloInput = document.getElementById('titulo');
+    const conteudoInput = document.getElementById('conteudo');
+    const contadorTitulo = document.getElementById('contador-titulo');
+    const contadorConteudo = document.getElementById('contador-conteudo');
+    const formNovaIdeia = document.getElementById('form-nova-ideia');
+
+    // Atualiza a contagem de caracteres dos campos
+    function atualizarContadores() {
+      if (tituloInput && contadorTitulo) {
+        contadorTitulo.textContent = `${tituloInput.value.length}/100`;
+      }
+      if (conteudoInput && contadorConteudo) {
+        contadorConteudo.textContent = `${conteudoInput.value.length}/2000`;
+      }
+    }
+
+    if (tituloInput && conteudoInput) {
+      // Se acabou de salvar uma ideia com sucesso, limpa o rascunho anterior
+      const mensagemSucesso = document.querySelector('.callout-verde');
+      if (mensagemSucesso && mensagemSucesso.textContent.includes('salva com sucesso')) {
+        sessionStorage.removeItem('rascunho_titulo');
+        sessionStorage.removeItem('rascunho_conteudo');
+      } else {
+        // Restaura o texto preservado no sessionStorage (ex: após excluir outra ideia)
+        const tituloSalvo = sessionStorage.getItem('rascunho_titulo');
+        const conteudoSalvo = sessionStorage.getItem('rascunho_conteudo');
+        if (tituloSalvo !== null) {
+          tituloInput.value = tituloSalvo;
+        }
+        if (conteudoSalvo !== null) {
+          conteudoInput.value = conteudoSalvo;
+        }
+      }
+
+      // Exibe a contagem correta ao carregar a página
+      atualizarContadores();
+
+      // Salva o texto no sessionStorage e atualiza contador enquanto digita
+      tituloInput.addEventListener('input', () => {
+        sessionStorage.setItem('rascunho_titulo', tituloInput.value);
+        atualizarContadores();
+      });
+
+      conteudoInput.addEventListener('input', () => {
+        sessionStorage.setItem('rascunho_conteudo', conteudoInput.value);
+        atualizarContadores();
+      });
+
+      // Limpa o rascunho ao enviar o formulário de cadastro
+      if (formNovaIdeia) {
+        formNovaIdeia.addEventListener('submit', () => {
+          sessionStorage.removeItem('rascunho_titulo');
+          sessionStorage.removeItem('rascunho_conteudo');
+        });
+      }
+    }
+  </script>
 </body>
 </html>

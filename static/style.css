@@ -156,6 +156,15 @@ body {
   background: rgba(56, 189, 248, 0.04);
 }
 
+.contador-caracteres {
+  display: block;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 0.35rem;
+}
+
 .form-acoes {
   display: flex;
   gap: 0.75rem;
@@ -224,6 +233,39 @@ body {
   border-color: var(--text-muted);
 }
 
+.btn-marcar,
+.btn-toggle {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--emerald-light);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+}
+.btn-marcar:hover,
+.btn-toggle:hover {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: var(--emerald-light);
+  color: #ffffff;
+}
+
+.btn-desmarcar {
+  background: rgba(245, 158, 11, 0.08);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: var(--amber);
+  padding: 0.4rem 0.85rem;
+  font-size: 0.78rem;
+}
+.btn-desmarcar:hover {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: var(--amber);
+  color: #ffffff;
+}
+
+.ideia-postada {
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
 /* Lista de Publicações */
 .lista-publicacoes {
   display: flex;
@@ -238,11 +280,20 @@ body {
   padding: 1.1rem 1.25rem;
   display: flex;
   flex-direction: column;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 }
 
 .publicacao-item:hover {
   border-color: rgba(255, 255, 255, 0.16);
+}
+
+.publicacao-item.item-postado {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.publicacao-item.item-postado .concept-desc {
+  opacity: 0.75;
 }
 
 .publicacao-acoes {

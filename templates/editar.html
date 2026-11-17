@@ -29,9 +29,9 @@
     {% endwith %}
 
     {# Seção: Editar ideia #}
-    <section class="card borda-amarela">
+    <section class="card">
       <div class="section-title-group">
-        <span class="concept-tag texto-amarelo">Atualização</span>
+        <span class="concept-tag">Atualização</span>
         <h2 class="section-title">Editar ideia</h2>
       </div>
 
@@ -41,11 +41,13 @@
         <div class="form-grupo">
           <label for="titulo">Título:</label>
           <input type="text" id="titulo" name="titulo" value="{{ publicacao.titulo }}" maxlength="100" required>
+          <small class="contador-caracteres" id="contador-titulo">0/100</small>
         </div>
 
         <div class="form-grupo">
           <label for="conteudo">Descrição:</label>
           <textarea id="conteudo" name="conteudo" rows="5" maxlength="2000" required>{{ publicacao.conteudo }}</textarea>
+          <small class="contador-caracteres" id="contador-conteudo">0/2000</small>
         </div>
 
         <div class="form-acoes">
@@ -55,5 +57,28 @@
       </form>
     </section>
   </div>
+
+  <script>
+    const tituloInput = document.getElementById('titulo');
+    const conteudoInput = document.getElementById('conteudo');
+    const contadorTitulo = document.getElementById('contador-titulo');
+    const contadorConteudo = document.getElementById('contador-conteudo');
+
+    // Atualiza a contagem com base no texto preenchido ou digitado
+    function atualizarContadores() {
+      if (tituloInput && contadorTitulo) {
+        contadorTitulo.textContent = `${tituloInput.value.length}/100`;
+      }
+      if (conteudoInput && contadorConteudo) {
+        contadorConteudo.textContent = `${conteudoInput.value.length}/2000`;
+      }
+    }
+
+    if (tituloInput && conteudoInput) {
+      atualizarContadores();
+      tituloInput.addEventListener('input', atualizarContadores);
+      conteudoInput.addEventListener('input', atualizarContadores);
+    }
+  </script>
 </body>
 </html>
