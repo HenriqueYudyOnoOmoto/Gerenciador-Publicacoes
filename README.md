@@ -38,9 +38,3 @@ Os testes usam um banco temporário. Eles verificam registro de ideias, validaç
 - `templates/editar.html`: formulário de edição de ideia (com contadores).
 - `static/style.css`: estilos da página.
 - `test_app.py`: testes automatizados.
-
-## Segurança e limites
-
-As consultas utilizam parâmetros no SQLite para proteção contra injeção de SQL. Formulários que alteram dados utilizam token CSRF, e as ações de exclusão e marcação de status só aceitam requisições `POST`.
-
-O sistema guarda apenas texto e não possui agendamento, calendário, categorias, publicação automática ou integração com redes sociais.

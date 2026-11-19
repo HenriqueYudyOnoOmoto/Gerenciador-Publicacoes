@@ -1,22 +1,18 @@
-# Ambientes virtuais
 venv/
 .venv/
 env/
 
-# Cache do Python
 __pycache__/
 *.py[cod]
 *$py.class
 
-# Banco de dados local SQLite (conforme especificação, deve ser gerado automaticamente e ignorado)
+
 *.db
 *.sqlite
 *.sqlite3
 
-# Arquivos de ambiente e chaves
 .env
 
-# Arquivos do sistema operacional e editores
 .DS_Store
 Thumbs.db
 .vscode/
