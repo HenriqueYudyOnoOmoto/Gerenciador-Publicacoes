@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app-container">
@@ -15,7 +15,7 @@
       <h1 class="app-title">Gerenciador de Ideias para <span class="texto-azul">Publicações</span></h1>
     </header>
 
-    {# Mensagens de feedback (Callouts) #}
+    {# mensagens de sucesso e de erro #}
     {% with mensagens = get_flashed_messages(with_categories=true) %}
     {% if mensagens %}
     <div class="mensagens">
@@ -28,25 +28,22 @@
     {% endif %}
     {% endwith %}
 
-    {# Seção: Editar ideia #}
     <section class="card">
       <div class="section-title-group">
         <span class="concept-tag">Atualização</span>
         <h2 class="section-title">Editar ideia</h2>
       </div>
 
-      <form action="{{ url_for('editar_salvar', id=publicacao.id) }}" method="POST">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-
+      <form action="{{ url_for('editar', id=ideia.id) }}" method="POST">
         <div class="form-grupo">
           <label for="titulo">Título:</label>
-          <input type="text" id="titulo" name="titulo" value="{{ publicacao.titulo }}" maxlength="100" required>
+          <input type="text" id="titulo" name="titulo" value="{{ ideia.titulo }}" maxlength="100" required>
           <small class="contador-caracteres" id="contador-titulo">0/100</small>
         </div>
 
         <div class="form-grupo">
           <label for="conteudo">Descrição:</label>
-          <textarea id="conteudo" name="conteudo" rows="5" maxlength="2000" required>{{ publicacao.conteudo }}</textarea>
+          <textarea id="conteudo" name="conteudo" rows="5" maxlength="2000" required>{{ ideia.conteudo }}</textarea>
           <small class="contador-caracteres" id="contador-conteudo">0/2000</small>
         </div>
 
@@ -59,26 +56,19 @@
   </div>
 
   <script>
-    const tituloInput = document.getElementById('titulo');
-    const conteudoInput = document.getElementById('conteudo');
-    const contadorTitulo = document.getElementById('contador-titulo');
-    const contadorConteudo = document.getElementById('contador-conteudo');
+    const campoTitulo = document.getElementById("titulo");
+    const campoConteudo = document.getElementById("conteudo");
+    const contadorTitulo = document.getElementById("contador-titulo");
+    const contadorConteudo = document.getElementById("contador-conteudo");
 
-    // Atualiza a contagem com base no texto preenchido ou digitado
     function atualizarContadores() {
-      if (tituloInput && contadorTitulo) {
-        contadorTitulo.textContent = `${tituloInput.value.length}/100`;
-      }
-      if (conteudoInput && contadorConteudo) {
-        contadorConteudo.textContent = `${conteudoInput.value.length}/2000`;
-      }
+      contadorTitulo.textContent = campoTitulo.value.length + "/100";
+      contadorConteudo.textContent = campoConteudo.value.length + "/2000";
     }
 
-    if (tituloInput && conteudoInput) {
-      atualizarContadores();
-      tituloInput.addEventListener('input', atualizarContadores);
-      conteudoInput.addEventListener('input', atualizarContadores);
-    }
+    atualizarContadores();
+    campoTitulo.addEventListener("input", atualizarContadores);
+    campoConteudo.addEventListener("input", atualizarContadores);
   </script>
 </body>
 </html>

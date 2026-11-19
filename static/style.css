@@ -41,7 +41,6 @@ body {
   justify-content: center;
 }
 
-/* Scrollbar com o estilo do tema */
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -56,7 +55,6 @@ body {
   margin: 0 auto;
 }
 
-/* Cabeçalho */
 .app-header {
   margin-bottom: 2rem;
 }
@@ -82,7 +80,6 @@ body {
   color: #fff;
 }
 
-/* Badges e Tags */
 .concept-tag {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -110,7 +107,6 @@ body {
   word-break: break-word;
 }
 
-/* Cartões baseados no estilo original */
 .card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
@@ -120,7 +116,6 @@ body {
   flex-direction: column;
 }
 
-/* Formulário */
 .form-grupo {
   margin-bottom: 1rem;
 }
@@ -172,7 +167,7 @@ body {
   margin-top: 0.5rem;
 }
 
-/* Botões estilizados */
+/* Botões */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -233,16 +228,14 @@ body {
   border-color: var(--text-muted);
 }
 
-.btn-marcar,
-.btn-toggle {
+.btn-marcar {
   background: rgba(16, 185, 129, 0.08);
   border-color: rgba(16, 185, 129, 0.3);
   color: var(--emerald-light);
   padding: 0.4rem 0.85rem;
   font-size: 0.78rem;
 }
-.btn-marcar:hover,
-.btn-toggle:hover {
+.btn-marcar:hover {
   background: rgba(16, 185, 129, 0.18);
   border-color: var(--emerald-light);
   color: #ffffff;
@@ -319,7 +312,7 @@ body {
   border-radius: var(--radius-md);
 }
 
-/* Mensagens de Alerta (Callouts) */
+/* Callouts */
 .mensagens {
   margin-bottom: 1.5rem;
 }
@@ -335,22 +328,10 @@ body {
   margin-bottom: 0.6rem;
 }
 
-.callout-amarelo { border-left-color: var(--amber) !important; color: var(--amber); }
 .callout-vermelho { border-left-color: var(--red) !important; color: var(--red); }
 .callout-verde { border-left-color: var(--emerald) !important; color: var(--emerald-light); }
-.callout-azul { border-left-color: var(--cyan) !important; color: var(--cyan); }
 
-/* Cores de borda e texto originais */
-.borda-verde { border-color: var(--emerald) !important; }
-.borda-amarela { border-color: var(--amber) !important; }
-.borda-azul { border-color: var(--cyan) !important; }
-.borda-vermelha { border-color: var(--red) !important; }
-.borda-branca { border-color: rgba(226, 232, 240, 0.7) !important; }
-
-.texto-verde { color: var(--emerald-light) !important; }
-.texto-amarelo { color: var(--amber) !important; }
 .texto-azul { color: var(--cyan) !important; }
-.texto-vermelho { color: var(--red) !important; }
 
 @media (max-width: 600px) {
   body {
